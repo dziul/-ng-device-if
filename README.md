@@ -3,7 +3,6 @@
 Uma diretiva estrutural que inclui condicionalmente um modelo com base no valor de uma expressão coagida a _Array de String_.
 
 [![Preview](./src/assets/images/preview.gif)](https://dziul.github.io/ng-device-if/)
-[preview in prod](https://dziul.github.io/ng-device-if/)
 
 #### Sintaxe
 
