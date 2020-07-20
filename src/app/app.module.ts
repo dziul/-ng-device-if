@@ -2,11 +2,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { DeviceDetectorModule } from './shared/device-detector/device-detector.module';
+
+import { NgDeviceIfDirective } from './shared/device-detector/ng-device-if.directive';
 
 @NgModule({
-  declarations: [AppComponent],
-  imports: [BrowserModule, DeviceDetectorModule],
+  declarations: [AppComponent, NgDeviceIfDirective],
+  imports: [BrowserModule],
   providers: [],
   bootstrap: [AppComponent],
 })
