@@ -71,9 +71,9 @@ interface BreakpointProps {
 
 ```json
 {
-    small: [0, 768],
-    medium: [768, 1024],
-    large: [1024],
+    "small": [0, 768],
+    "medium": [768, 1024],
+    "large": [1024],
 };
 ```
 
