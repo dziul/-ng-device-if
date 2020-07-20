@@ -1,14 +1,5 @@
-import {
-  Directive,
-  Input,
-  TemplateRef,
-  ViewContainerRef,
-  OnInit,
-  OnDestroy,
-  HostListener,
-} from '@angular/core';
-import { fromEvent, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Directive, Input, TemplateRef, ViewContainerRef, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { DeviceDetectorService } from './device-detector.service';
 
 @Directive({

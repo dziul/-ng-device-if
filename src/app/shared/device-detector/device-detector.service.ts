@@ -6,24 +6,32 @@ interface EventWindow extends Event {
   target: Window;
 }
 
-interface BreakpointProps {
-  [key: string]: number[];
+type BreakpointPropValue = [number | null, (number | null)?, (() => boolean)?];
+
+interface BreakpointProp {
+  [key: string]: BreakpointPropValue;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class DeviceDetectorService {
-  private breakpoints: BreakpointProps = {
+  private regexMobile = /android|iphone|ipad|ipod|mobile/i;
+
+  private breakpoints: BreakpointProp = {
     small: [0, 768],
     medium: [768, 1024], // min, max
-    large: [1024], // max
+    large: [1024], // == [1024, null, null]
+    mobile: [0, 1024, () => this.isMobile()],
   };
 
-  windowInnerWidth$ = new BehaviorSubject(window.innerWidth);
+  // private isMobile$ = new BehaviorSubject(this.isMobile());
+  private windowInnerWidth$ = new BehaviorSubject(window.innerWidth);
 
   constructor() {
     fromEvent(window, 'resize').subscribe((event: EventWindow) => {
+      // const isMobile = this.regexMobile.test(event.target.navigator.userAgent);
+      // this.isMobile$.next(isMobile);
       this.windowInnerWidth$.next(event.target.innerWidth);
     }); // angular destrói automaticamente
   }
@@ -36,12 +44,27 @@ export class DeviceDetectorService {
 
     const min = breakpoint[0];
     const max = breakpoint[1];
-    const hasMax = typeof max === 'number';
+    const callback = breakpoint[2];
 
-    if (hasMax) {
+    const hasMin = typeof min === 'number';
+    const hasMax = typeof max === 'number';
+    const hasCallback = typeof callback === 'function';
+
+    if (hasMin && hasMax) {
+      if (hasCallback) {
+        return width >= min && width <= max && callback();
+      }
       return width >= min && width <= max;
     }
-    return width > min;
+
+    if (hasMin && !hasMax) {
+      if (hasCallback) {
+        return width > min && callback();
+      }
+      return width > min;
+    }
+
+    return callback();
   }
 
   between(...breakpoints: string[]) {
@@ -54,11 +77,11 @@ export class DeviceDetectorService {
     return this.windowInnerWidth$.pipe(map((width) => this.compare(breakpointName, width)));
   }
 
-  addBreakpoints(breakpoints: BreakpointProps) {
+  addBreakpoints(breakpoints: BreakpointProp) {
     this.breakpoints = { ...this.breakpoints, ...breakpoints };
   }
 
-  addBreakpoint(key: string, value: number[]) {
+  addBreakpoint(key: string, value: BreakpointPropValue) {
     this.breakpoints[key] = value;
   }
 
@@ -68,5 +91,14 @@ export class DeviceDetectorService {
 
   getBreakpoints() {
     return this.breakpoints;
+  }
+
+  isMobile() {
+    const useAgent = window.navigator.userAgent;
+    return this.regexMobile.test(useAgent);
+  }
+
+  isTouch() {
+    return window.navigator.maxTouchPoints || 'ontouchstart' in window;
   }
 }
