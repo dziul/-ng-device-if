@@ -1,20 +1,24 @@
 <!-- alternativa A -->
-<div *ngDeviceIf="['mobile', 'desktop']">
-  Mobile or Desktop
+<div *ngDeviceIf="['mobile']">
+  Mobile with max 1024
+</div>
+
+<div *ngDeviceIf="['small']">
+  Small
+</div>
+
+<div *ngDeviceIf="['medium']">
+  Medium
 </div>
 
 <!-- alternativa B -->
-<div *ngDeviceIf="['mobile']">
-  Mobile
-</div>
-
-<div *ngDeviceIf="['tablet']">
-  Tablet
+<div *ngDeviceIf="['small', 'large']">
+  Small or Large
 </div>
 
 <!-- alternativa C -->
-<ng-template [ngDeviceIf]="['desktop']">
-  <div>Desktop</div>
+<ng-template [ngDeviceIf]="['large']">
+  <div>Large</div>
 </ng-template>
 
 <!-- <div *ngIf="isMobile(); else isDesktop">

@@ -12,7 +12,7 @@ Uma diretiva estrutural que inclui condicionalmente um modelo com base no valor 
 Abreviado
 
 ```html
-<div *ngDeviceIf="['mobile','desktop']">
+<div *ngDeviceIf="['small','large']">
   ...
 </div>
 ```
@@ -20,7 +20,7 @@ Abreviado
 ou expandido
 
 ```html
-<ng-template [ngDeviceIf]="['table']">
+<ng-template [ngDeviceIf]="['mobile']">
   <div>
     ...
   </div>
@@ -60,32 +60,78 @@ A idéia dessa diretiva foi usar um serviço auxiliar, no qual usasse o rxjs e e
   - `addBreakpoints(breakpoints: BreakpointProps) : void`
   - `addBreakpoint(key: string, value: number[]) : void`
   - `hasBreakpoint(breakpointName: string) : boolean`
-
-```ts
-interface BreakpointProps {
-  [key: string]: number[];
-}
-```
+  - `isMobile() : boolean`
+  - `isTouch() : boolean`
 
 **Padrões breakpoints**
 
-```json
+```js
 {
     "small": [0, 768],
     "medium": [768, 1024],
-    "large": [1024],
+    "large": [null, 1024],
+    "mobile": [0,1024, () => ('ontouchstart' in window)]
 };
 ```
 
-> `key: value<[min, max]>` ou `key: value<[max]>`
+#### Adicione breakpoint personalizado
 
-**Falta add teste.**
+no componente principal:
+
+```js
+
+import { Component, OnInit } from '@angular/core';
+import { DeviceDetectorService } from './shared/device-detector/device-detector.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent implements OnInit {
+  constructor(private deviceDetector: DeviceDetectorService) {}
+
+  ngOnInit() {
+    this.deviceDetector.addBreakpoints({
+      touch: [0, 1024, ()=> this.deviceDetector.isTouch()],
+    });
+  }
+}
+```
+
+no html
+
+```html
+<div *ngDeviceIf="['touch']">
+  <!-- Show if it has a touch and is between 0 and 1024 width -->
+</div>
+```
+
+| index | tipo                            | descrição          |
+| ----- | ------------------------------- | ------------------ |
+| 0     | `number|null`                   | mínimo ou negar    |
+| 1     | `number|null` (optional)        | máximo ou negar    |
+| 2     | `function():boolean` (optional) | função condicional |
+
+**Possibilidades debaixo dos panos**:
+
+> _w = `window.innerWidth`_
+
+1. Se todos os _indexs_ existirem: `index.0 >= w && index.1 <= w && index.2()`
+1. Se não existir _index 2_ : `index.0 >= w && index.1 <= w`
+1. Se _index_ 1 for `null` e existir _index_ 2: `index.0 > w && index.2()`
+1. Se existir apenas index 0: `index.0 > w`
+
+#### Observação
+
+_Falta adicionar teste da diretiva_
 
 #### Referência
 
 - [NgIf](https://angular.io/api/common/NgIf)
 - [Criando uma diretiva de estrutura (ngElse) -
   Loiane Groner](https://www.youtube.com/watch?v=b-rRPCK-fdE&t=10m27s)
+- [Typescript - Tuple Types](https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#333-tuple-types)
 
 ---
 
