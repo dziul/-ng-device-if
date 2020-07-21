@@ -2,7 +2,7 @@
 
 Uma diretiva estrutural que inclui condicionalmente um modelo com base no valor de uma expressão coagida a _Array de String_.
 
-[![Preview](./src/assets/images/preview.gif)](https://dziul.github.io/ng-device-if/)
+[![Preview](./src/assets/images/preview-c.gif)](https://dziul.github.io/ng-device-if/)
 
 #### Sintaxe
 
@@ -92,7 +92,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.deviceDetector.addBreakpoints({
-      touch: [0, 1024, ()=> this.deviceDetector.isTouch()],
+      // touch: [0, 1024, ()=> this.deviceDetector.isTouch()],
+      touch: [()=> this.deviceDetector.isTouch()],
     });
   }
 }
@@ -119,7 +120,7 @@ no html
 1. Se todos os _indexs_ existirem: `index.0 >= w && index.1 <= w && index.2()`
 1. Se não existir _index 2_ : `index.0 >= w && index.1 <= w`
 1. Se _index_ 1 for `null` e existir _index_ 2: `index.0 > w && index.2()`
-1. Se existir apenas index 0: `index.0 > w`
+1. Se existir apenas index 0, e for tipo `number`: `index.0 > w`; ou se for `function`: `index.0()`
 
 #### Observação
 

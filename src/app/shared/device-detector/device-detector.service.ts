@@ -6,7 +6,13 @@ interface EventWindow extends Event {
   target: Window;
 }
 
-type BreakpointPropValue = [number | null, (number | null)?, (() => boolean)?];
+type BreakpointFnConditional = () => boolean;
+
+type BreakpointPropValue = [
+  number | BreakpointFnConditional,
+  (number | null)?,
+  BreakpointFnConditional?
+];
 
 interface BreakpointProp {
   [key: string]: BreakpointPropValue;
@@ -64,7 +70,14 @@ export class DeviceDetectorService {
       return width > min;
     }
 
-    return callback();
+    if (typeof min === 'function') {
+      return min();
+    }
+    if (!hasMin && !hasMax && hasCallback) {
+      return callback();
+    }
+
+    throw new Error(`Condition error. Check the value of breakpoint '${breakpointName}'`);
   }
 
   between(...breakpoints: string[]) {
